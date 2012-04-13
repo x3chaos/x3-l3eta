@@ -12,8 +12,9 @@ import java.util.zip.ZipOutputStream;
 public class Builder {
 	ArrayList<File> fileDump = new ArrayList<File>();
 	private static String directory = "./", home = "./", output = "Plugin";
-	private static String temp = "./temp/", tempLib = "./temp/lib/", homeLib = "./lib/";
-	
+	private static String temp = "./temp/", homeLib = "./lib/", data = "./";
+	private static File tempFile;
+
 	public static void main(String[] args) {
 		if (args.length == 3) {
 			home = args[0];
@@ -21,58 +22,43 @@ public class Builder {
 			output = args[2];
 			homeLib = home + "lib/";
 			temp = home + "temp/";
-			tempLib = temp + "lib/";
+			data = directory.replace('\\', '/') + "data/";
+			tempFile = new File(temp);
 		}
 		new Builder();
 	}
 
 	public Builder() {
-		copyLibs();
+		if(!tempFile.exists())
+			tempFile.mkdirs();
+		this.extractLibs();
 	}
 
-	public void copyLibs() {
-		new File(tempLib).mkdirs();
-		String[] libs = new File(homeLib).list();
-		for (String lib : libs) {
-			if (!lib.startsWith("bukkit")) {
-				File orig = new File(homeLib, lib), copy = new File(tempLib, lib);
-				try {
-					copy.createNewFile();
-					FileInputStream fr = new FileInputStream(orig);
-					FileOutputStream fw = new FileOutputStream(copy);
-					int len;
-					byte[] buffer = new byte[1024];
-					while ((len = fr.read(buffer)) > 0) {
-						fw.write(buffer, 0, len);
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		extractLib();
-	}
-
-	public void extractLib() {
-		File[] libs = new File(tempLib).listFiles();
+	public void extractLibs() {
+		File[] libs = new File(homeLib).listFiles();
 		try {
 			for (File lib : libs) {
-				byte[] buffer = new byte[1024];
-				ZipInputStream in = new ZipInputStream(new FileInputStream(lib));
-				FileOutputStream output = null;
-				int len;
-				ZipEntry x;
-				while ((x = in.getNextEntry()) != null) {
-					File file = new File(temp, x.getName());
-					if (x.isDirectory()) {
-						file.mkdir();
-					} else {
-						file.createNewFile();
-						output = new FileOutputStream(file);
-						while ((len = in.read(buffer)) > 0) {
-							output.write(buffer, 0, len);
+				if (!lib.getName().contains("bukkit")) {
+					byte[] buffer = new byte[1024];
+					ZipInputStream in = new ZipInputStream(new FileInputStream(
+							lib));
+					FileOutputStream output = null;
+					int len;
+					ZipEntry x;
+					while ((x = in.getNextEntry()) != null) {
+						File file = new File(temp, x.getName());
+						if (x.isDirectory()) {
+							file.mkdir();
+						} else {
+							file.createNewFile();
+							output = new FileOutputStream(file);
+							while ((len = in.read(buffer)) > 0) {
+								output.write(buffer, 0, len);
+							}
+							output.close();
 						}
 					}
+					in.close();
 				}
 			}
 		} catch (Exception ex) {
@@ -86,15 +72,16 @@ public class Builder {
 		for (String dir : dirs) {
 			dumpFiles(new File(dir));
 		}
-		for (int i = 0; i < fileDump.size(); i++) {
-			File file = fileDump.get(i);
-			if (!file.getName().endsWith(".class")) {
+		for (File file : fileDump.toArray(new File[0])) {
+			String f = file.getPath() + file.getName();
+			String[] blackList = { ".jar", ".java", ".zip", ".MF" };
+			if (!f.contains("."))
 				fileDump.remove(file);
+			for (String bad : blackList) {
+				if (f.endsWith(bad))
+					fileDump.remove(file);
 			}
 		}
-		fileDump.add(new File(home + "bin/" + directory + "data/", "plugin.yml"));
-		fileDump.add(new File(home + "bin/" + directory + "data/",
-				"MANIFEST.MF"));
 		makeZip();
 	}
 
@@ -122,29 +109,50 @@ public class Builder {
 				out.closeEntry();
 				in.close();
 			}
+			makeManifest(out);
 			out.close();
 			File jar = new File(home, output + ".jar");
 			if (jar.exists())
 				jar.delete();
 			zip.renameTo(jar);
-			cleanUp();
+			cleanUp(tempFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void cleanUp() {
+	private void makeManifest(ZipOutputStream out) {
 		try {
-			Runtime.getRuntime().exec("cmd.exe rmdir /S temp/"); // To fix
+			String manifest = "Manifest-Version: 1.0\n";
+			out.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+			out.write(manifest.getBytes());
+			out.closeEntry();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void cleanUp(File dir) {
+		try {
+			File[] list = dir.listFiles();
+			dir.deleteOnExit();
+			for (File file : list) {
+				if (file.isDirectory()) {
+					cleanUp(file);
+				} else {
+					file.delete();
+				}
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
 	public String getFileToZip(String file) {
-		file = file.replace('\\', '/');
-		file = file.replaceFirst("(bin/|temp/|data/)", "");
-		System.out.println(file);
-		return file.endsWith(".MF") ? "META-INF/" + file : file;
+		file = file.replace(home, "").replace('\\', '/');
+		file = file.replaceFirst("(bin|temp)/", "");
+		file = file.replace(data, "");
+		System.out.println("Adding: " + file);
+		return file;
 	}
 }

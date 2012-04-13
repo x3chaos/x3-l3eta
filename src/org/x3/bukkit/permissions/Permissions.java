@@ -13,13 +13,17 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.l3eta.Database;
+import org.x3.bukkit.permissions.db.DBHelper;
 import org.x3.bukkit.permissions.listeners.PlayerListener;
+
+import com.mongodb.BasicDBObject;
 
 public class Permissions extends JavaPlugin {
 	private static ArrayList<X3Player> players = new ArrayList<X3Player>();
 	private static final Logger log = Logger.getLogger("Minecraft.x3Permissions");
 	private PluginManager pm = Bukkit.getPluginManager();
-
+	private static ArrayList<BasicDBObject> commands = new ArrayList<BasicDBObject>();
+	
 	@Override
 	public void onEnable() {
 		Database.init("BukkitPermissionsX66");
@@ -37,8 +41,7 @@ public class Permissions extends JavaPlugin {
 				commandMap = (SimpleCommandMap) cm.get(spm);
 				if (commandMap != null) {
 					for (Command c : commandMap.getCommands()) {
-
-						log.info("/" + c.getName());
+						DBHelper.createCommand("/" + c.getName())
 					}
 				} else {
 					log.info("Cound not find CommandMap.");

@@ -15,7 +15,7 @@ public class X3Player {
 	private final Player player;
 	private ArrayList<String> permissions;
 	private final String userid;
-	private String lastWarning = "";
+	private String lastWarning = "", tempWarn = "";
 	
 	
 	public X3Player(Player player) {
@@ -35,7 +35,10 @@ public class X3Player {
 		player.sendMessage(message);
 	}
 	
-	public void sendWarning(String message) {		
+	public void sendWarning(String message) {
+		tempWarn = message;
+		if(tempWarn.equals(lastWarning))
+			return;
 		if(!lastWarning.equals(message)) {
 			sendMessage(ChatColor.YELLOW + message);
 		}

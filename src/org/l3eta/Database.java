@@ -169,7 +169,7 @@ public class Database {
 		}
 	}
 
-	public static void addTo(String colName, BasicDBObject o) {
+	public static void addTo(String colName, Object... o) {
 		int e = doFunction(Type.INSERT, o);
 		if (e != 0) {
 			throwError(e);

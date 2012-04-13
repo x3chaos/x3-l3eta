@@ -14,7 +14,6 @@ import org.x3.bukkit.permissions.Permissions.FindType;
 import com.mongodb.BasicDBObject;
 
 public class X3Permission {
-	// TODO remove this.
 	public final static String DEFAULT = "command.default.";
 	public final static String CAN_MOVE = "player.event.move";
 	public final static String CAN_SPEAK = "player.event.speak";
