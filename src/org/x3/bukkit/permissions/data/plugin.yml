@@ -1,11 +1,5 @@
-main: org.x3.bukkit.permissions.Permissions
+main: org.x3.bukkit.PermissionPlugin
 name: Permissions
 version: 0.1
 description: Permissions plugin
 author: l3eta & x3Chaos
-commands:
-    add:
-        description: Adds a Permission
-        usage: /<command> [permission]
-        permission: Permissions.add
-        permission-message: You don't have derp.

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.x3.bukkit.permissions.util.Util;
 
 /**
  * @author l3eta
@@ -13,21 +16,19 @@ import org.bukkit.entity.Player;
  */
 public class X3Player {
 	private final Player player;
-	private ArrayList<String> permissions;
+	private ArrayList<X3Permission> permissions;
 	private final String userid;
 	private String lastWarning = "", tempWarn = "";
 	
 	
 	public X3Player(Player player) {
 		this.player = player;
-		this.permissions = new ArrayList<String>();
+		this.permissions = new ArrayList<X3Permission>();
 		userid = Util.makeUID(player);
-		if(player.getName().equals("swyftknyght"))
-			permissions.add(X3Permission.CAN_MOVE);
 	}
 	
 	
-	public boolean hasPermission(String permission) {
+	public boolean hasPermission(X3Permission permission) {
 		return permissions.contains(permission);
 	}
 	
@@ -51,5 +52,13 @@ public class X3Player {
 	
 	public String getUserID() {
 		return userid;
+	}
+	
+	public Inventory getInv() {
+		return player.getInventory();
+	}
+	
+	public void removeItem(ItemStack item) {
+		getInv().remove(item);
 	}
 }

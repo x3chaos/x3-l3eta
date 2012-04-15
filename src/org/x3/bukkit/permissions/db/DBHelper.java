@@ -3,10 +3,10 @@ package org.x3.bukkit.permissions.db;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.bukkit.Material;
 import org.l3eta.Database;
-import org.x3.bukkit.permissions.Util;
-import org.x3.bukkit.permissions.X3Permission;
 import org.x3.bukkit.permissions.X3Player;
+import org.x3.bukkit.permissions.util.Util;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -29,7 +29,7 @@ public class DBHelper {
 		command.put("name", cmd);
 		command.put("slashs", slashs);
 		if (!q) {
-			command.put("permission", X3Permission.DEFAULT);
+			command.put("permission", "" + cmd);
 			command.put("group", "unassigned");
 		}
 		return command;
@@ -48,15 +48,24 @@ public class DBHelper {
 	
 	public static BasicDBObject createUser(X3Player player, boolean q) {
 		BasicDBObject user = new BasicDBObject();
-		user.put("userid", player.getUserID());
-		
+		user.put("userid", player.getUserID());		
 		if(!q) {
+			user.put("groups", new BasicDBList());
 			user.put("created", new Date().toString());
 			user.put("permissions", new BasicDBList());
 			//TODO add anything for DB Players
 		}
 		
 		return user;
+	}
+	
+	public static BasicDBObject createBlock(Material m, boolean q) {
+		BasicDBObject block = new BasicDBObject();
+		block.put("mat", m.toString().toLowerCase());
+		if(!q) {
+			block.put("permission", "" + m.toString().toLowerCase());
+		}
+		return block;
 	}
 
 	public static boolean inList(BasicDBList list, Object o) {
@@ -83,7 +92,6 @@ public class DBHelper {
 		}
 		return permissions.toArray(new String[0]);
 	}
-	
 	
 	
 	// GET PERMISSION GROUPS

@@ -32,153 +32,158 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
-import org.x3.bukkit.permissions.X3Permission;
+import org.x3.bukkit.permissions.X3EventHandler;
 
 public class PlayerListener implements Listener {
+	private X3EventHandler xeh;
+
+	public PlayerListener(X3EventHandler xeh) {
+		this.xeh = xeh;
+	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityTargetEvent(EntityTargetLivingEntityEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBlockPlaced(BlockPlaceEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBlockBreak(BlockBreakEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerAnimationEvent(PlayerAnimationEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerBedEnterEvent(PlayerBedEnterEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerCommandPreprocces(PlayerCommandPreprocessEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerBedLeaveEvent(PlayerBedLeaveEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChangedWorldEvent(PlayerChangedWorldEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChatEvent(PlayerChatEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerEggThrowEvent(PlayerEggThrowEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerExpChangeEvent(PlayerExpChangeEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerFishEvent(PlayerFishEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteractEvent(PlayerInteractEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerItemHeldEvent(PlayerItemHeldEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoinEvent(PlayerJoinEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerKickEvent(PlayerKickEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLevelChangeEvent(PlayerLevelChangeEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLoginEvent(PlayerLoginEvent event) {
-		// X3Permission.onEvent(event); //Removed this so it doesn't cast
+		// xeh.onEvent(event); //Removed this so it doesn't cast
 		// exception
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerMoveEvent(PlayerMoveEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerPickupItemEvent(PlayerPickupItemEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerQuitEvent(PlayerQuitEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerRespawnEvent(PlayerRespawnEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerShearEntityEvent(PlayerShearEntityEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerToggleSprintEvent(PlayerToggleSprintEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerVelocityEvent(PlayerVelocityEvent event) {
-		X3Permission.onEvent(event);
+		xeh.onEvent(event);
 	}
 }

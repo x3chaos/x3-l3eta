@@ -1,4 +1,5 @@
 @ECHO OFF
 cd bin/
-java org.x3.bukkit.main.Builder %userprofile%\workspace\x3\ org\x3\bukkit\permissions\ x3Permissions
+set directory=org\x3\bukkit\permissions\
+java org.x3.bukkit.main.Builder PermissionPlugin x3Permissions %directory% org\l3eta
 pause

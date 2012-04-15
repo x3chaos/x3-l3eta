@@ -9,7 +9,7 @@ import org.x3.bukkit.permissions.listeners.PlayerListener;
 public class Checker {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
-		PlayerListener x = new PlayerListener();
+		PlayerListener x = new PlayerListener(null);
 		for (Method m : x.getClass().getMethods()) {
 			System.out.println(m.getName());
 			if (m.getParameterTypes().length > 0) {
@@ -36,5 +36,9 @@ public class Checker {
             }
         }
     }
+	
+	public String getString() {
+		return "Derp";
+	}
 
 }
