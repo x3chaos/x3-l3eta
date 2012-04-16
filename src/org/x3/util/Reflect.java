@@ -1,4 +1,4 @@
-package org.x3.bukkit.permissions.util;
+package org.x3.util;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -8,9 +8,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
-import org.x3.bukkit.permissions.db.DBHelper;
-
-import com.mongodb.BasicDBObject;
 
 public class Reflect {
 	private static final Logger log = new Logger(Reflect.class);
@@ -27,13 +24,13 @@ public class Reflect {
 		commandMap.register("x3Permission", command);
 	}
 
-	public static BasicDBObject[] getPluginCommands() {
-		ArrayList<BasicDBObject> commands = new ArrayList<BasicDBObject>();
+	public static String[] getPluginCommands() {
+		ArrayList<String> commands = new ArrayList<String>();
 		try {
 			for (Command c : commandMap.getCommands()) {
-				commands.add(DBHelper.createCommand("/" + c.getName()));
+				commands.add("/" + c.getName());
 			}
-			return commands.toArray(new BasicDBObject[0]);
+			return commands.toArray(new String[0]);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

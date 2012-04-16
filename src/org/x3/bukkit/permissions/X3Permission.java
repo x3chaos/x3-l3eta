@@ -9,43 +9,43 @@ public final class X3Permission {
 	private static HashMap<String, X3Permission> cache = new HashMap<String, X3Permission>();
 	private final String permission;
 
-	public X3Permission(String permission) {
+	private X3Permission(String permission) {
 		this.permission = permission;
+	}
+
+	private static String getPermission(PermissionType type, Object o) {
+		if(o instanceof Event) {
+			String env = camel(((Event) o).getEventName());
+			if(type == PermissionType.EVENT) {
+				return "event." + env;
+			}
+		} else if(o instanceof Material) {
+			String mat = low(o.toString());
+			if(type == PermissionType.ITEM) {
+				return "item." + mat;
+			}
+		} else if(o instanceof String) {			
+			if(type == PermissionType.COMMAND) {
+				String command = getCommand(o.toString());
+				return "command." + command;
+			} else if(type == PermissionType.EVENT) {
+				return "event." + camel(o.toString());
+			}
+		}
+		return null;
+	}
+
+	public enum PermissionType {
+		EVENT, ITEM, COMMAND;
 	}
 
 	public String toString() {
 		return this.permission;
 	}
 
-	// Defaults
-	public static X3Permission defaultEvent(Event event) {
-		return create("default.event." + camel(event.getEventName()));
-	}
-
-	public static X3Permission defaultItem(Material m) {
-		return create("default.item." + low(m));
-	}
-	
-	public static X3Permission defaultCommand(String command) {
-		return create("default.command." + getCommand(command));
-	}
-	
-	// Permissions
-	
-	public static X3Permission makeEvent(Event event) {
-		return create("event." + camel(event.getEventName()));
-	}
-	
-	public static X3Permission makeCommand(String command) {
-		return create("command." + getCommand(command));
-	}
-
-	public static X3Permission makeItem(Material m) {
-		return create("item." + low(m));
-	}
-	
 	// Helpers
-	private static X3Permission create(String perm) {
+	public static X3Permission create(PermissionType type, Object permission) {
+		String perm = getPermission(type, permission);
 		if (!cache.containsKey(perm)) {
 			X3Permission xp = new X3Permission(perm);
 			cache.put(perm, xp);
@@ -53,7 +53,7 @@ public final class X3Permission {
 		}
 		return cache.get(perm);
 	}
-	
+
 	private static String getCommand(String string) {
 		int index = 0;
 		while (string.charAt(index) == '/') {

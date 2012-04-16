@@ -11,12 +11,16 @@ import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.x3.X3Player;
+import org.x3.bukkit.permissions.X3Permission.PermissionType;
 import org.x3.bukkit.permissions.db.X3Database;
-import org.x3.bukkit.permissions.db.X3Database.FindType;
-import org.x3.bukkit.permissions.util.Util;
 
 public class X3EventHandler {
 
+	private final PermissionType event = PermissionType.EVENT;
+	private final PermissionType cmd = PermissionType.COMMAND;
+	private final PermissionType item = PermissionType.ITEM;
+	
 	public static String DEFAULT_WARNING_START = "You do not have permission to ";
 
 	private final X3Database xdb;
@@ -24,11 +28,16 @@ public class X3EventHandler {
 	public X3EventHandler(final X3Database xdb) {
 		this.xdb = xdb;
 	}
+	
+	public X3Permission create(PermissionType type, Object o) {
+		return X3Permission.create(type, o);
+	}
 
 	public void onEvent(Event event) {
-		if (event instanceof PlayerEvent) {
+		X3Permission perm = create(this.event, event);
+		if (event instanceof PlayerEvent) {			
 			PlayerEvent pe = (PlayerEvent) event;
-			X3Player x3p = xdb.getPlayer(FindType.USERID, pe.getPlayer());
+			X3Player x3p = xdb.getPlayer(pe.getPlayer());
 			if (x3p == null)
 				x3p = new X3Player(pe.getPlayer());
 			switch (event.getEventName()) {
@@ -36,7 +45,7 @@ public class X3EventHandler {
 					xdb.addPlayer(x3p);
 					break;
 				case "PlayerGameModeChangeEvent":
-					if (!x3p.hasPermission(X3Permission.makeEvent(event))) {
+					if (!x3p.hasPermission(perm)) {
 						x3p.sendWarning(DEFAULT_WARNING_START
 								+ "change GameMode!");
 						cancel(event);
@@ -47,14 +56,14 @@ public class X3EventHandler {
 					xdb.removePlayer(x3p);
 					break;
 				case "PlayerMoveEvent":
-					if (!x3p.hasPermission(X3Permission.makeEvent(event))) {
+					if (!x3p.hasPermission(perm)) {
 						x3p.sendWarning(DEFAULT_WARNING_START + "move!");
 						cancel(event);
 					}
 					break;
 
 				case "PlayerChatEvent":
-					if (!x3p.hasPermission(X3Permission.makeEvent(event))) {
+					if (!x3p.hasPermission(perm)) {
 						x3p.sendWarning(DEFAULT_WARNING_START + "speak!");
 						cancel(event);
 					}
@@ -75,17 +84,15 @@ public class X3EventHandler {
 			X3Player x3p = null;
 			switch (event.getEventName()) {
 				case "BlockPlaceEvent":
-					x3p = xdb.getPlayer(FindType.USERID,
-							((BlockPlaceEvent) event).getPlayer());
-					if (!x3p.hasPermission(X3Permission.makeEvent(event))) {
+					x3p = xdb.getPlayer(((BlockPlaceEvent) event).getPlayer());
+					if (!x3p.hasPermission(perm)) {
 						x3p.sendWarning(DEFAULT_WARNING_START + "build!");
 						cancel(event);
 					}
 					break;
 				case "BlockBreakEvent":
-					x3p = xdb.getPlayer(FindType.USERID,
-							((BlockBreakEvent) event).getPlayer());
-					if (!x3p.hasPermission(X3Permission.makeEvent(event))) {
+					x3p = xdb.getPlayer(((BlockBreakEvent) event).getPlayer());
+					if (!x3p.hasPermission(perm)) {
 						x3p.sendWarning(DEFAULT_WARNING_START + "break blocks!");
 						cancel(event);
 					}
@@ -96,9 +103,8 @@ public class X3EventHandler {
 				case "EntityTargetLivingEntityEvent":
 					EntityTargetLivingEntityEvent et = (EntityTargetLivingEntityEvent) event;
 					if (et.getTarget() instanceof Player) {
-						String userid = Util.makeUID((Player) et.getTarget());
-						X3Player x3p = xdb.getPlayer(FindType.USERID, userid);
-						if (!x3p.hasPermission(X3Permission.makeEvent(event)))
+						X3Player x3p = xdb.getPlayer((Player) et.getTarget());
+						if (!x3p.hasPermission(create(this.event, "PlayerMoveEvent")))
 							cancel(event);
 					}
 					break;
@@ -117,14 +123,16 @@ public class X3EventHandler {
 
 	// TODO
 	private void checkHolding(PlayerItemHeldEvent event) {
-		X3Player player = xdb.getPlayer(FindType.USERID, event.getPlayer());
+		X3Player player = xdb.getPlayer(event.getPlayer());
 		ItemStack prev = player.getInv().getItem(event.getPreviousSlot());
 		ItemStack next = player.getInv().getItem(event.getNewSlot());
-		if (!player.hasPermission(X3Permission.makeItem(prev.getType()))) {
+		if (!player.hasPermission(create(item, prev.getType()))) {
 			player.removeItem(prev);
+			player.sendWarning(DEFAULT_WARNING_START + "keep " + prev.getType().toString());
 		}
-		if (!player.hasPermission(X3Permission.makeItem(next.getType()))) {
+		if (!player.hasPermission(create(item, next.getType()))) {
 			player.removeItem(next);
+			player.sendWarning(DEFAULT_WARNING_START + "keep " + next.getType().toString());
 		}
 	}
 }

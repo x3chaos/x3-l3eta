@@ -13,8 +13,8 @@ import org.x3.bukkit.permissions.X3EventHandler;
 import org.x3.bukkit.permissions.commands.AddCommand;
 import org.x3.bukkit.permissions.db.X3Database;
 import org.x3.bukkit.permissions.listeners.PlayerListener;
-import org.x3.bukkit.permissions.util.FileUtil;
-import org.x3.bukkit.permissions.util.Reflect;
+import org.x3.util.FileUtil;
+import org.x3.util.Reflect;
 
 public class PermissionPlugin extends JavaPlugin {
 	private static boolean opOverride = false;

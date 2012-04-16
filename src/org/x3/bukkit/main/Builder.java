@@ -9,7 +9,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.x3.bukkit.permissions.util.Util;
+import org.x3.util.MiscUtil;
+
 
 public class Builder {
 	ArrayList<File> fileDump = new ArrayList<File>();
@@ -30,7 +31,7 @@ public class Builder {
 			data = directory.replace('\\', '/') + "data/";
 			tempFile = new File(temp);
 			if (args.length > 3) {
-				other = Util.sliceArray(args, 3);
+				other = MiscUtil.sliceArray(args, 3);
 			}
 		}
 		new Builder();
@@ -79,11 +80,11 @@ public class Builder {
 	public void sniffFiles() {
 		String[] dirs = { directory, temp };
 		for (String dir : dirs) {
-			dumpFiles(new File(dir));
+			dumpFiles(new File(dir), true);
 		}
 		if (other != null && other.length != 0) {
 			for (String o : other) {
-				dumpFiles(new File(o));
+				dumpFiles(new File(o), o.endsWith("*"));
 			}
 		}
 		for (File file : fileDump.toArray(new File[0])) {
@@ -100,11 +101,11 @@ public class Builder {
 		makeZip();
 	}
 
-	public void dumpFiles(File dir) {
+	public void dumpFiles(File dir, boolean recursive) {
 		for (File file : dir.listFiles()) {
-			if (file.isDirectory())
-				dumpFiles(file);
-			else
+			if (file.isDirectory() && recursive) {
+				dumpFiles(file, recursive);
+			} else
 				fileDump.add(file);
 		}
 	}

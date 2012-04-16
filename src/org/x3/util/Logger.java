@@ -1,4 +1,4 @@
-package org.x3.bukkit.permissions.util;
+package org.x3.util;
 
 import java.util.logging.Level;
 
