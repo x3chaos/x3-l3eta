@@ -60,6 +60,12 @@ public class X3Player {
 	public void removeItem(ItemStack item) {
 		getInv().remove(item);
 	}
+	
+	public boolean isOp() {
+		return player.isOp();
+	}
+
+	// Static Methods
 
 	public static String makeUID(Player player) {
 		return Crypto.sha(player.getName() + getIP(player), "x3Permission", 0);
@@ -68,4 +74,5 @@ public class X3Player {
 	public static String getIP(Player player) {
 		return player.getAddress().getAddress().getHostAddress();
 	}
+
 }

@@ -6,7 +6,8 @@ import java.util.HashMap;
 import org.bukkit.entity.Player;
 import org.l3eta.Database;
 import org.x3.X3Player;
-import org.x3.util.Logger;
+import org.x3.util.DBUtil;
+import org.x3.util.LoggerUtil;
 
 import com.mongodb.BasicDBObject;
 
@@ -16,12 +17,14 @@ import com.mongodb.BasicDBObject;
  * @about This class is so it does not always have to pull from the database
  */
 public class X3Database {
-	private final static Logger log = new Logger(X3Database.class);
+	private final DBUtil dbu;
+	private final static LoggerUtil log = new LoggerUtil(X3Database.class);
 	private HashMap<String, BasicDBObject> groups;
 	private HashMap<String, BasicDBObject> users;
 	private ArrayList<X3Player> players;
 
-	public X3Database() {
+	public X3Database(String dbname) {
+		this.dbu = new DBUtil(new Database(dbname));
 		players = new ArrayList<X3Player>();
 		groups = new HashMap<String, BasicDBObject>();
 		users = new HashMap<String, BasicDBObject>();
@@ -30,24 +33,18 @@ public class X3Database {
 
 	private void initDatabase() {
 		try {
-			BasicDBObject[] groups = Database.getAllFrom("groups");
-			if (groups == null)
-				Database.addTo("groups", createDefaultGroup());
-			BasicDBObject[] users = Database.getAllFrom("users");
-			if (users == null)
-				Database.addTo("users", createDefaultUser());
 			log.info("Loading Groups");
-			for (BasicDBObject group : groups) {
+			for (BasicDBObject group : dbu.getGroups()) {
 				this.groups.put(group.getString("name"), group);
 			}
 			log.info("Loaded " + this.groups.size() + " Groups");
 			log.info("Loading Users");
-			for (BasicDBObject user : users) {
+			for (BasicDBObject user : dbu.getUsers()) {
 				this.users.put(user.getString("userid"), user);
 			}
 			log.info("Loaded " + this.users.size() + " Users");
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 	}
 
@@ -76,15 +73,8 @@ public class X3Database {
 		return null;
 	}
 
-	// Defaults
-	private BasicDBObject createDefaultGroup() {
-
-		return null;
-	}
-
-	private Object createDefaultUser() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
+	
+	
 
 }

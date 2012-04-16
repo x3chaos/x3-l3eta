@@ -1,4 +1,6 @@
-package org.x3.util;
+package org.l3eta;
+
+import java.util.ArrayList;
 
 public class MiscUtil {
 	public static String complete(String[] array, int index) {
@@ -20,12 +22,24 @@ public class MiscUtil {
 	public static String complete(String string, int index) {
 		return complete(string.split(" "), index);
 	}
-	
+
 	public static void throwError(Exception exception) {
 		try {
 			throw exception;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public static void throwError(String error) {
+		throwError(new Exception(error));
+	}
+
+	public static Object[] completeArray(Object[] arr, int index) {
+		ArrayList<Object> oArr = new ArrayList<Object>();
+		for (int i = index; i < arr.length; i++) {
+			oArr.add(arr[i]);
+		}
+		return oArr.toArray();
 	}
 }

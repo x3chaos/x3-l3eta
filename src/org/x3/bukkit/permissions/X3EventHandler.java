@@ -8,6 +8,7 @@ import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
@@ -16,26 +17,30 @@ import org.x3.bukkit.permissions.X3Permission.PermissionType;
 import org.x3.bukkit.permissions.db.X3Database;
 
 public class X3EventHandler {
-
+	private static boolean op_override = false;
 	private final PermissionType event = PermissionType.EVENT;
 	private final PermissionType cmd = PermissionType.COMMAND;
 	private final PermissionType item = PermissionType.ITEM;
-	
-	public static String DEFAULT_WARNING_START = "You do not have permission to ";
+
+	public static String WARNING_START = "You do not have permission to ";
 
 	private final X3Database xdb;
 
 	public X3EventHandler(final X3Database xdb) {
 		this.xdb = xdb;
 	}
-	
+
+	public static void setOPOverride(boolean override) {
+		op_override = override;
+	}
+
 	public X3Permission create(PermissionType type, Object o) {
 		return X3Permission.create(type, o);
 	}
 
 	public void onEvent(Event event) {
 		X3Permission perm = create(this.event, event);
-		if (event instanceof PlayerEvent) {			
+		if (event instanceof PlayerEvent) {
 			PlayerEvent pe = (PlayerEvent) event;
 			X3Player x3p = xdb.getPlayer(pe.getPlayer());
 			if (x3p == null)
@@ -46,33 +51,25 @@ public class X3EventHandler {
 					break;
 				case "PlayerGameModeChangeEvent":
 					if (!x3p.hasPermission(perm)) {
-						x3p.sendWarning(DEFAULT_WARNING_START
-								+ "change GameMode!");
-						cancel(event);
+						cancel(x3p, event, WARNING_START + "change GameMode!");
 					}
 					break;
 				case "PlayerQuitEvent":
 				case "PlayerKickEvent":
 					xdb.removePlayer(x3p);
 					break;
-				case "PlayerMoveEvent":
-					if (!x3p.hasPermission(perm)) {
-						x3p.sendWarning(DEFAULT_WARNING_START + "move!");
-						cancel(event);
-					}
-					break;
-
 				case "PlayerChatEvent":
 					if (!x3p.hasPermission(perm)) {
-						x3p.sendWarning(DEFAULT_WARNING_START + "speak!");
-						cancel(event);
+						cancel(x3p, event, WARNING_START + "speak!");
 					}
 					break;
 				case "PlayerItemHeldEvent":
 					this.checkHolding((PlayerItemHeldEvent) event);
 					break;
-				case "PlayerInteractEvent":
-				case "PlayerAnimationEvent":
+				case "PlayerCommandPreprocessEvent":
+					this.preprocessCommand((PlayerCommandPreprocessEvent) event);
+					break;
+				case "PlayerMoveEvent":
 					// Ignored TODO do something here.
 					break;
 				default:
@@ -86,15 +83,13 @@ public class X3EventHandler {
 				case "BlockPlaceEvent":
 					x3p = xdb.getPlayer(((BlockPlaceEvent) event).getPlayer());
 					if (!x3p.hasPermission(perm)) {
-						x3p.sendWarning(DEFAULT_WARNING_START + "build!");
-						cancel(event);
+						cancel(x3p, event, WARNING_START + "build!");
 					}
 					break;
 				case "BlockBreakEvent":
 					x3p = xdb.getPlayer(((BlockBreakEvent) event).getPlayer());
 					if (!x3p.hasPermission(perm)) {
-						x3p.sendWarning(DEFAULT_WARNING_START + "break blocks!");
-						cancel(event);
+						cancel(x3p, event, WARNING_START + "break blocks!");
 					}
 					break;
 			}
@@ -104,16 +99,21 @@ public class X3EventHandler {
 					EntityTargetLivingEntityEvent et = (EntityTargetLivingEntityEvent) event;
 					if (et.getTarget() instanceof Player) {
 						X3Player x3p = xdb.getPlayer((Player) et.getTarget());
-						if (!x3p.hasPermission(create(this.event, "PlayerMoveEvent")))
-							cancel(event);
+						if (!x3p.hasPermission(create(this.event,
+								"PlayerMoveEvent")))
+							cancel(x3p, event, "");
 					}
 					break;
 			}
 		}
 	}
 
-	public void cancel(Event event) {
+	private void cancel(X3Player player, Event event, String warning) {
 		try {
+			if (player.isOp() && op_override) {
+				return;
+			}
+			player.sendWarning(warning);
 			Cancellable c = Cancellable.class.cast(event);
 			c.setCancelled(true);
 		} catch (Exception ex) {
@@ -121,18 +121,29 @@ public class X3EventHandler {
 		}
 	}
 
-	// TODO
 	private void checkHolding(PlayerItemHeldEvent event) {
 		X3Player player = xdb.getPlayer(event.getPlayer());
 		ItemStack prev = player.getInv().getItem(event.getPreviousSlot());
 		ItemStack next = player.getInv().getItem(event.getNewSlot());
 		if (!player.hasPermission(create(item, prev.getType()))) {
 			player.removeItem(prev);
-			player.sendWarning(DEFAULT_WARNING_START + "keep " + prev.getType().toString());
+			player.sendWarning(WARNING_START + "keep "
+					+ prev.getType().toString());
 		}
 		if (!player.hasPermission(create(item, next.getType()))) {
 			player.removeItem(next);
-			player.sendWarning(DEFAULT_WARNING_START + "keep " + next.getType().toString());
+			player.sendWarning(WARNING_START + "keep "
+					+ next.getType().toString());
 		}
+	}
+
+	private void preprocessCommand(PlayerCommandPreprocessEvent event) {
+		X3Player player = xdb.getPlayer(event.getPlayer());
+		String[] args = event.getMessage().split(" ");		
+		
+		if(!X3CommandHandler.onCommand(player, args)) {
+			cancel(player, event, ""); //TODO add in warning
+			//Maybe do int returns for different types of errors
+		}		
 	}
 }
