@@ -7,7 +7,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -39,12 +38,7 @@ public class PlayerListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 		xeh.onEvent(event);
 	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerCommandPreprocces(PlayerCommandPreprocessEvent event) {
-		xeh.onEvent(event);
-	}
-
+	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChatEvent(PlayerChatEvent event) {
 		xeh.onEvent(event);
@@ -59,7 +53,7 @@ public class PlayerListener implements Listener {
 	public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
 		xeh.onEvent(event);
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerItemHeldEvent(PlayerItemHeldEvent event) {
 		xeh.onEvent(event);

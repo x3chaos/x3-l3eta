@@ -2,7 +2,9 @@ package org.x3.bukkit.main;
 
 public class Testing {
 	public static void main(String[] args) {
-		System.out.println(Testing.class.getClass().getName());
+		Object[] o = { "derp", "Der", " candy" };
+
+		System.out.println(String[].class.getComponentType());
 	}
 
 }
