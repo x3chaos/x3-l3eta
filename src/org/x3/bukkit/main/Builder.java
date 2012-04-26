@@ -9,28 +9,29 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.x3.bukkit.permissions.util.Util;
+import org.l3eta.MiscUtil;
 
 public class Builder {
 	ArrayList<File> fileDump = new ArrayList<File>();
-	private static String directory = "./", home = System
-			.getProperty("user.dir").replace("bin", ""), output = "Plugin";
-	private static String temp = "./temp/", homeLib = "./lib/", data = "./";
-	private static File plugin;
+	private static String directory = "./", home = System.getProperty(
+			"user.dir").replace("bin", ""), output = "Plugin";
+	private static String temp = "./temp/", homeLib = "./lib/";
+	private static File plugin, yml;
 	private static String[] other;
 	private static File tempFile;
 
 	public static void main(String[] args) {
 		if (args.length >= 2) {
-			plugin =  new File(home + "bin/org/x3/bukkit/", args[0] + ".class");
+			plugin = new File(home + "bin/org/x3/bukkit/", args[0] + ".class");
 			output = args[1];
 			directory = args[2];
+			yml = new File(home + "bin/org/x3/defaults/", args[3] + "Plugin.yml");
+			System.out.println(yml.getName());
 			homeLib = home + "lib/";
 			temp = home + "temp/";
-			data = directory.replace('\\', '/') + "data/";
 			tempFile = new File(temp);
-			if (args.length > 3) {
-				other = Util.sliceArray(args, 3);
+			if (args.length > 4) {
+				other = (String[]) MiscUtil.sliceArray(args, 4);
 			}
 		}
 		new Builder();
@@ -79,11 +80,11 @@ public class Builder {
 	public void sniffFiles() {
 		String[] dirs = { directory, temp };
 		for (String dir : dirs) {
-			dumpFiles(new File(dir));
+			dumpFiles(new File(dir), true);
 		}
 		if (other != null && other.length != 0) {
 			for (String o : other) {
-				dumpFiles(new File(o));
+				dumpFiles(new File(o), o.endsWith("*"));
 			}
 		}
 		for (File file : fileDump.toArray(new File[0])) {
@@ -96,15 +97,16 @@ public class Builder {
 					fileDump.remove(file);
 			}
 		}
+		fileDump.add(yml);
 		fileDump.add(plugin);
 		makeZip();
 	}
 
-	public void dumpFiles(File dir) {
+	public void dumpFiles(File dir, boolean recursive) {
 		for (File file : dir.listFiles()) {
-			if (file.isDirectory())
-				dumpFiles(file);
-			else
+			if (file.isDirectory() && recursive) {
+				dumpFiles(file, recursive);
+			} else
 				fileDump.add(file);
 		}
 	}
@@ -166,8 +168,8 @@ public class Builder {
 	public String getFileToZip(String file) {
 		file = file.replace(home, "").replace('\\', '/');
 		file = file.replaceFirst("(bin|temp)/", "");
-		if (file.endsWith("plugin.yml")) {
-			file = file.replace(data, "");
+		if (file.endsWith(yml.getName())) {
+			file = "plugin.yml";
 		}
 		System.out.println("Adding: " + file);
 		return file;
